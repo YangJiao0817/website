@@ -79,6 +79,7 @@ Clicking the `DOWNLOAD` button on the top right will start the downloading proce
 ## Working with ChartMuseum via the Helm CLI
 
 As a helm chart repository, Harbor can interoperate with Helm CLI. To install Helm CLI, please refer [install helm](https://helm.sh/docs/intro/install/). Run command `helm version` to make sure the version of Helm CLI is v2.9.1+.
+If you are using helm CLI version 3.7.0+, please refer to
 
 ```sh
 helm version
@@ -155,6 +156,7 @@ For other more helm commands like how to sign a chart, please refer to the [helm
 
 ## Manage Helm Charts with the OCI-compatible registry of Harbor
 
+### If the version of Helm CLI you are using is before 3.7.0, please refer to the following
 Helm 3 now supports registry operations for an OCI-compatible registry including pushing and pulling. To install the latest Helm CLI, please refer [install helm](https://helm.sh/docs/intro/install/). Please also run `helm version` command to make sure the version of Helm CLI is v3.0.0+.
 
 ```sh
@@ -196,6 +198,49 @@ To pull charts from the the OCI-compatible registry of Harbor, run the `helm cha
 
 ```sh
 helm chart pull xx.xx.xx.xx/library/dummy-chart:version
+```
+### If the version of Helm CLI you are using is 3.7.0 or later, please refer to the following
+Helm 3 now supports registry operations for an OCI-compatible registry including pushing and pulling. To install the latest Helm CLI, please refer [install helm](https://helm.sh/docs/intro/install/). Please also run `helm version` command to make sure the version of Helm CLI is v3.7.0+.
+
+```sh
+helm version
+
+#version.BuildInfo{Version:"v3.7.0", GitCommit:"eeac83883cb4014fe60267ec6373570374ce770b", GitTreeState:"clean", GoVersion:"go1.16.8"}
+```
+
+### Login to the OCI-compatible registry of Harbor
+
+Before pull/push helm charts with the OCI-compatible registry of Harbor, Harbor should be logged with `helm registry login` command.
+
+```sh
+helm registry login xx.xx.xx.xx
+```
+
+{{< note >}}
+The CA file used by the Harbor is necessary to be trusted in the system due to an [issue](https://github.com/helm/helm/issues/6324) in Helm.
+{{< /note >}}
+
+### Push Charts to the artifact Repository with the CLI
+
+After logging in, run the `helm package` command to package a chart directory which will prepare the artifact for the pushing.
+
+```sh
+helm package dummy-chart
+```
+
+
+When the chart was saved run the `helm push` command to push your charts:
+
+```sh
+helm3.7 push dummy-chart-version.tgz oci://xx.xx.xx.xx/library
+```
+
+### Pull Charts from the artifact Repository with the CLI
+
+To pull charts from the the OCI-compatible registry of Harbor, run the `helm chart pull` command just like pulling image via docker cli.
+
+```sh
+helm pull oci://xx.xx.xx.xx/library/dummy-chart --version version
 ```
 
 ### Manage Helm Charts artifacts in Harbor Interface
